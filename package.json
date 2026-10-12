@@ -1,47 +1,114 @@
 {
-  "name": "@aerosium/config",
-  "version": "1.1.5",
-  "description": "Shared ESLint and Prettier configurations for Aerosium projects",
-  "main": "index.js",
+  "name": "@mollybyte/config",
+  "version": "2.0.0",
+  "description": "Shared ESLint (flat config) and Prettier configurations for TypeScript, React and Next.js projects",
+  "keywords": [
+    "eslint",
+    "eslint-config",
+    "eslintconfig",
+    "flat-config",
+    "prettier",
+    "prettier-config",
+    "typescript",
+    "react",
+    "nextjs"
+  ],
+  "homepage": "https://github.com/mollybyte/config#readme",
+  "bugs": {
+    "url": "https://github.com/mollybyte/config/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mollybyte/config.git"
+  },
+  "license": "MIT",
+  "author": "mollybyte",
   "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./eslint": {
+      "types": "./eslint/index.d.ts",
+      "default": "./eslint/index.js"
+    },
+    "./eslint/base": {
+      "types": "./eslint/base.d.ts",
+      "default": "./eslint/base.js"
+    },
+    "./eslint/react": {
+      "types": "./eslint/react.d.ts",
+      "default": "./eslint/react.js"
+    },
+    "./eslint/next": {
+      "types": "./eslint/next.d.ts",
+      "default": "./eslint/next.js"
+    },
+    "./prettier": "./prettier/index.json",
+    "./package.json": "./package.json"
+  },
   "files": [
     "eslint",
-    "prettier"
+    "prettier",
+    "CHANGELOG.md"
   ],
-  "exports": {
-    "./eslint": "./eslint/index.js",
-    "./prettier": "./prettier/index.json"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test test/*.test.js"
   },
-  "keywords": [
-    "eslint-config",
-    "prettier-config",
-    "aerosium",
-    "nextjs",
-    "react"
-  ],
-  "author": "Aerosium",
-  "license": "MIT",
+  "prettier": "@mollybyte/config/prettier",
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "eslint": "^10.12.0",
+    "eslint-config-next": "^16.4.0",
+    "next": "^16.4.0",
+    "prettier": "^3.9.10",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "~6.0.3"
+  },
   "peerDependencies": {
-    "@eslint/eslintrc": ">=3.0.0",
-    "@eslint/js": ">=8.0.0", 
-    "@next/eslint-plugin-next": ">=14.0.0",
-    "@typescript-eslint/eslint-plugin": ">=6.0.0",
-    "@typescript-eslint/parser": ">=6.0.0",
-    "eslint": ">=8.0.0",
-    "eslint-config-next": ">=14.0.0",
-    "eslint-import-resolver-typescript": ">=3.6.0",
-    "eslint-plugin-import": ">=2.0.0",
-    "eslint-plugin-jsx-a11y": ">=6.0.0",
-    "eslint-plugin-react": ">=7.0.0",
-    "eslint-plugin-react-hooks": ">=4.0.0",
-    "eslint-plugin-unicorn": ">=48.0.0",
-    "prettier": ">=3.0.0",
+    "eslint": "^10.4.0",
+    "eslint-config-next": "^16.0.0",
+    "prettier": "^3.0.0",
     "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "eslint-config-next": {
+      "optional": true
+    },
+    "prettier": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "overrides": {
+    "eslint-plugin-react": {
+      "eslint": "$eslint"
+    },
+    "eslint-plugin-jsx-a11y": {
+      "eslint": "$eslint"
+    }
+  },
+  "dependencies": {
+    "@eslint/compat": "^2.1.1",
+    "@eslint/js": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-unicorn": "^77.0.0",
+    "globals": "^17.13.0",
+    "typescript-eslint": "^8.71.1"
   }
 }

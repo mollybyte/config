@@ -1,139 +1,196 @@
-# @aerosium/config
+<div align="center">
 
-Modern ESLint and Prettier configuration for Next.js and React projects with TypeScript support. This package provides a ready-to-use set of rules for maintaining high code quality and consistent style across all projects.
+# @mollybyte/config
 
-## Features
+**Strict, fast, Prettier-friendly ESLint and Prettier presets<br/>for TypeScript, React and Next.js.**
 
-### ✨ Key Benefits
+[![CI](https://github.com/mollybyte/config/actions/workflows/ci.yml/badge.svg)](https://github.com/mollybyte/config/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+![ESLint 10](https://img.shields.io/badge/ESLint-10-4B32C3?logo=eslint&logoColor=white)
+![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
+![Node 22+](https://img.shields.io/badge/Node-22%2B-5FA04E?logo=nodedotjs&logoColor=white)
 
-- **Ready-made Next.js Configuration** - optimized rules for working with Next.js 14+
-- **Modern Standards Support** - uses the new ESLint flat config structure
-- **TypeScript Out of the Box** - full TypeScript support with strict rules
-- **Performance Optimization** - rules for Core Web Vitals and optimization
-- **Accessibility (A11Y)** - built-in rules for ensuring accessibility
-- **Consistent Code Style** - Prettier integration for unified formatting
-- **Automatic Import Sorting** - maintaining order in imports
-- **File Naming** - rules for consistent file naming
+</div>
 
-### 🎯 What's Included
+---
 
-- Next.js and React rules
-- TypeScript configuration
-- Accessibility rules (jsx-a11y)
-- Import sorting
-- Prettier integration
-- Unicorn rules for modern JavaScript
-- Strict TypeScript rules
+- ⚡️ **Flat config, nothing legacy.** No `FlatCompat` and no type-aware parsing, so there's no `tsconfig` to wire up.
+- 🎨 **Prettier owns formatting.** Every preset ends with `eslint-config-prettier`, so the two tools never fight.
+- 📦 **One install.** Plugins ship as dependencies. You add ESLint, Prettier and TypeScript, not a dozen plugins.
+- 🧩 **Modular.** Pick `base`, `react` or `next`, then extend with plain flat-config blocks.
+- 🔷 **Typed.** Declarations are included, so `eslint.config.ts` works out of the box.
 
-## Installation
+## Quick start
 
 ```bash
-# Using yarn
-yarn add -D @aerosium/config
-
-# Install peer dependencies
-yarn add -D @eslint/eslintrc @eslint/js @next/eslint-plugin-next @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-unicorn prettier typescript eslint-config-next eslint-import-resolver-typescriptы
+npm i -D github:mollybyte/config eslint prettier typescript
 ```
+
+```js
+// eslint.config.mjs
+export { default } from '@mollybyte/config/eslint/next'
+```
+
+```jsonc
+// package.json
+{
+  "prettier": "@mollybyte/config/prettier",
+}
+```
+
+For the Next.js preset, also install `eslint-config-next` matching your `next` version. To pin a release, use `github:mollybyte/config#v2.0.0`.
+
+## Presets
+
+| Preset                           | Use for                  | Built on                                                              |
+| :------------------------------- | :----------------------- | :-------------------------------------------------------------------- |
+| `@mollybyte/config/eslint/base`  | Any JS / TS project      | `@eslint/js` · `typescript-eslint` · `unicorn` · `import-x` · globals |
+| `@mollybyte/config/eslint/react` | React apps and libraries | **base** + `react` · `react-hooks` · `jsx-a11y`                       |
+| `@mollybyte/config/eslint/next`  | Next.js 16+              | `eslint-config-next` (core-web-vitals + typescript) + the same rules  |
+| `@mollybyte/config/eslint`       | Next.js (1.x path)       | Alias of `eslint/next`                                                |
+| `@mollybyte/config/prettier`     | Everything               | Prettier options                                                      |
+
+<details>
+<summary><b>What the rules enforce</b></summary>
+
+<br/>
+
+**TypeScript**
+
+- `no-explicit-any`, `no-non-null-assertion`
+- `consistent-type-imports`, `consistent-type-definitions: interface`
+- `no-empty-object-type` (single-`extends` interfaces allowed)
+- `no-unused-vars` ignores names starting with `_`
+
+**Imports**
+
+- `import-x/order`: builtin → external → internal → parent → sibling → index, a blank line between groups, alphabetized
+- `import-x/no-duplicates`
+
+**React**
+
+- `react/jsx-sort-props`: reserved first, shorthand first, callbacks last
+- `react/jsx-boolean-value: never`, `react/jsx-curly-brace-presence: never`
+- `react-hooks` 7 recommended, **including the React Compiler rules** (`set-state-in-effect`, `purity`, `refs`, `immutability`, …). Turn individual ones off if your codebase isn't ready for them.
+- `jsx-a11y` recommended. In Next.js, `alt-text` also covers `<Image>`, and `no-img-element` and `google-font-display` are errors.
+
+**Unicorn**
+
+- `filename-case` allows kebab-, Pascal- and camelCase
+- Off: `no-null`, `name-replacements`, `no-array-reduce`, `prefer-top-level-await`, `expiring-todo-comments`, and the comment-style rules, so classic `*`-prefixed JSDoc is left alone.
+
+**Prettier**
+
+No semicolons, single quotes, trailing commas everywhere, `printWidth: 100`, `arrowParens: avoid`, LF line endings.
+
+</details>
 
 ## Usage
 
-### ESLint Configuration
+Each ESLint entry is a flat config array (`Linter.Config[]`).
 
-Create `eslint.config.mjs` in your project root:
+```js
+// eslint.config.mjs
+export { default } from '@mollybyte/config/eslint/react'
 
-```javascript
-import aerosiumConfig from '@aerosium/config/eslint'
-
-export default aerosiumConfig
+// or '@mollybyte/config/eslint/base' for TypeScript, Node and libraries
+// or '@mollybyte/config/eslint/next' for Next.js
 ```
 
-### Prettier Configuration
+### Extending
 
-Create `.prettierrc` in your project root:
+Append your own blocks after the preset:
+
+```js
+import next from '@mollybyte/config/eslint/next'
+
+export default [
+  ...next,
+  { ignores: ['generated/**'] },
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'unicorn/no-null': 'error',
+      'react-hooks/set-state-in-effect': 'warn',
+    },
+  },
+]
+```
+
+> [!WARNING]
+> Add **rules only**, not plugins the preset already registers. Spreading, say, `react.configs.flat.recommended` on top registers `react` a second time and fails with `Cannot redefine plugin`. In the Next.js preset, `react`, `react-hooks`, `jsx-a11y`, `import`, `@next/next` and `@typescript-eslint` come from `eslint-config-next`.
+
+### Prettier
+
+Reference the preset from `package.json`, as in the quick start, or from `.prettierrc`:
 
 ```json
-"@aerosium/config/prettier"
+"@mollybyte/config/prettier"
 ```
 
-### VS Code Settings
-
-Add these settings to your VS Code workspace:
+### VS Code
 
 ```json
 {
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll": "always",
-    "source.organizeImports": "explicit",
-    "source.fixAll.eslint": "always"
-  },
-  "prettier.arrowParens": "avoid"
+    "source.fixAll.eslint": "always",
+    "source.organizeImports": "explicit"
+  }
 }
 ```
 
-## Benefits
+## Requirements
 
-1. **Unified Code Style**
-   - Automatic formatting with Prettier
-   - Consistent rules across all projects
-   - Import and props sorting
+|                | Version                                             |
+| :------------- | :-------------------------------------------------- |
+| Node.js        | 22+                                                 |
+| ESLint         | 10.4+ (required by `eslint-plugin-unicorn` 77)      |
+| Prettier       | 3                                                   |
+| TypeScript     | 5+ (`typescript-eslint` 8 currently supports < 6.1) |
+| Next.js preset | `next` 16 and `eslint-config-next` 16               |
 
-2. **Code Quality Improvement**
-   - Prevention of common mistakes
-   - Following React and Next.js best practices
-   - Strict typing with TypeScript
+## Migrating from `@aerosium/config` 1.x
 
-3. **Performance**
-   - Core Web Vitals optimization rules
-   - Prevention of unnecessary re-renders
-   - Image and font optimization
+<details>
+<summary><b>Step by step</b></summary>
 
-4. **Accessibility**
-   - Built-in a11y rules
-   - ARIA attributes validation
-   - Semantic validation
+<br/>
 
-5. **Modern Standards**
-   - Support for new ESLint flat config structure
-   - Compatibility with latest Next.js versions
-   - Rules for modern JavaScript
+1. **Swap the package**
 
-## Limitations and Considerations
+   ```bash
+   npm rm @aerosium/config && npm i -D github:mollybyte/config
+   ```
 
-1. **Strict Rules**
-   - Some rules might seem too strict
-   - Team adaptation time might be needed
-   - May need to disable some rules for legacy code
+2. **Drop the old peer plugins** unless you use them directly: `@eslint/eslintrc`, `@eslint/js`, `@next/eslint-plugin-next`, `@typescript-eslint/*`, `eslint-plugin-import`, `eslint-plugin-jsx-a11y`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-unicorn`, `eslint-import-resolver-typescript`. Keep `eslint-config-next` for the Next.js preset.
 
-2. **Dependencies**
-   - Large number of peer dependencies
-   - Need to maintain up-to-date versions
-   - Possible version conflicts in large projects
+3. **Upgrade** to ESLint 10 and Node 22+, and to Next.js 16 if you use the Next.js preset.
 
-3. **Performance**
-   - ESLint with many rules might work slower
-   - Might need to configure ignored files/folders
-   - ESLint cache recommended for large projects
+4. **Update imports**
 
-## Usage Recommendations
+   | 1.x                         | 2.x                                                                                |
+   | :-------------------------- | :--------------------------------------------------------------------------------- |
+   | `@aerosium/config/eslint`   | `@mollybyte/config/eslint` (or `…/eslint/next`, `…/eslint/react`, `…/eslint/base`) |
+   | `@aerosium/config/prettier` | `@mollybyte/config/prettier`                                                       |
 
-1. **Gradual Implementation**
-   - Implement rules gradually in existing projects
-   - Use `eslint --fix` for automatic fixes
-   - Start with formatting, then add stricter rules
+5. **Rename rules** in overrides and `eslint-disable` comments
 
-2. **Project-specific Setup**
-   - Disable rules that don't fit your project
-   - Configure ignored files and folders
-   - Adapt configuration to project specifics
+   | 1.x                                     | 2.x                                       |
+   | :-------------------------------------- | :---------------------------------------- |
+   | `import/order`                          | `import-x/order`                          |
+   | `import/no-duplicates`                  | `import-x/no-duplicates`                  |
+   | `@typescript-eslint/no-empty-interface` | `@typescript-eslint/no-empty-object-type` |
+   | `unicorn/prevent-abbreviations`         | `unicorn/name-replacements`               |
+   | `unicorn/no-array-for-each`             | `unicorn/no-for-each`                     |
 
-3. **Process Optimization**
-   - Set up pre-commit hooks
-   - Use ESLint and Prettier in CI/CD
-   - Regularly update dependencies
+6. **Fix and format.** Run `npx eslint . --fix`, then `npx prettier --write .`. Formatting rules (`semi`, `quotes`, `react/jsx-max-props-per-line`, …) are no longer in ESLint; Prettier handles them.
+
+The full list of changes is in [CHANGELOG.md](./CHANGELOG.md).
+
+</details>
 
 ## License
 
-MIT
+[MIT](./LICENSE) © mollybyte

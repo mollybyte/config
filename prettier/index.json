@@ -10,13 +10,5 @@
   "bracketSpacing": true,
   "bracketSameLine": false,
   "arrowParens": "avoid",
-  "endOfLine": "lf",
-  "overrides": [
-    {
-      "files": "*.{json,yml,yaml,md}",
-      "options": {
-        "tabWidth": 2
-      }
-    }
-  ]
+  "endOfLine": "lf"
 }
